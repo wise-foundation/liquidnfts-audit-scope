@@ -20,13 +20,13 @@ contract LiquidBase {
     uint256 public constant SECONDS_IN_DAY = 86400;
 
     // Address if factory that creates lockers
-    address public constant FACTORY_ADDRESS = 0x9961f05a53A1944001C0dF650A5aFF65B21A37D0;
+    address public constant FACTORY_ADDRESS = 0x938bE4C47B909613441427db721B66D73dDd58c0;
 
     // Address to tranfer NFT to in event of non singleProvider liquidation
     address public constant TRUSTEE_MULTISIG = 0xfEc4264F728C056bD528E9e012cf4D943bd92b53;
 
     // ERC20 used for payments of this locker
-    address public constant PAYMENT_TOKEN = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
+    address public constant PAYMENT_TOKEN = 0xb70C4d4578AeF63A1CecFF8bF4aE1BCeDD187a6b;
 
     // Helper constant for comparison with 0x0 address
     address constant ZERO_ADDRESS = address(0);

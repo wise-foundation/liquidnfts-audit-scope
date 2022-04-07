@@ -71,6 +71,8 @@ contract LiquidLocker is LiquidTransfer, LiquidHelper {
         onlyLockerOwner
         onlyDuringContributionPhase
     {
+        if (_newPaymntRate > PRECISION_R) revert("INVALID_RATE");
+
         require(
             _newPaymntRate > globals.paymentRate,
             "LiquidLocker: INVALID_INCREASE"
@@ -118,6 +120,8 @@ contract LiquidLocker is LiquidTransfer, LiquidHelper {
         onlyLockerOwner
         onlyDuringContributionPhase
     {
+        if (_newPaymntRate > PRECISION_R) revert("INVALID_RATE");
+
         require(
             _newPaymntRate > globals.paymentRate,
             "LiquidLocker: INVALID_RATE"

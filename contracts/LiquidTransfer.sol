@@ -1,18 +1,8 @@
 // SPDX-License-Identifier: WISE
 
-pragma solidity =0.8.12;
+pragma solidity =0.8.17;
 
 contract LiquidTransfer {
-
-    // cryptoPunks contract address
-    address constant PUNKS = 0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB;
-
-    // local: 0xEb59fE75AC86dF3997A990EDe100b90DDCf9a826;
-    // ropsten: 0x2f1dC6E3f732E2333A7073bc65335B90f07fE8b0;
-    // mainnet: 0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB;
-
-    // cryptoKitties contract address
-    address constant KITTIES = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
 
     /* @dev
     * Checks if contract is nonstandard, does transfer according to contract implementation
@@ -25,36 +15,20 @@ contract LiquidTransfer {
     )
         internal
     {
-        bytes memory data;
-
-        if (_tokenAddress == KITTIES) {
-            data = abi.encodeWithSignature(
-                "transfer(address,uint256)",
-                _to,
-                _tokenId
-            );
-        } else if (_tokenAddress == PUNKS) {
-            data = abi.encodeWithSignature(
-                "transferPunk(address,uint256)",
-                _to,
-                _tokenId
-            );
-        } else {
-            data = abi.encodeWithSignature(
-                "safeTransferFrom(address,address,uint256)",
-                _from,
-                _to,
-                _tokenId
-            );
-        }
+        bytes memory data = abi.encodeWithSignature(
+            "safeTransferFrom(address,address,uint256)",
+            _from,
+            _to,
+            _tokenId
+        );
 
         (bool success,) = address(_tokenAddress).call(
             data
         );
 
         require(
-            success == true,
-            'NFT_TRANSFER_FAILED'
+            success,
+            "LiquidTransfer: NFT_TRANSFER_FAILED"
         );
     }
 
@@ -69,64 +43,12 @@ contract LiquidTransfer {
     )
         internal
     {
-        bytes memory data;
-
-        if (_tokenAddress == KITTIES) {
-            data = abi.encodeWithSignature(
-                "transferFrom(address,address,uint256)",
-                _from,
-                _to,
-                _tokenId
-            );
-        } else if (_tokenAddress == PUNKS) {
-            bytes memory punkIndexToAddress = abi.encodeWithSignature(
-                "punkIndexToAddress(uint256)",
-                _tokenId
-            );
-
-            (bool checkSuccess, bytes memory result) = address(_tokenAddress).staticcall(
-                punkIndexToAddress
-            );
-
-            (address owner) = abi.decode(
-                result,
-                (address)
-            );
-
-            require(
-                checkSuccess &&
-                owner == msg.sender,
-                'INVALID_OWNER'
-            );
-
-            bytes memory buyData = abi.encodeWithSignature(
-                "buyPunk(uint256)",
-                _tokenId
-            );
-
-            (bool buySuccess, bytes memory buyResultData) = address(_tokenAddress).call(
-                buyData
-            );
-
-            require(
-                buySuccess,
-                string(buyResultData)
-            );
-
-            data = abi.encodeWithSignature(
-                "transferPunk(address,uint256)",
-                _to,
-                _tokenId
-            );
-
-        } else {
-            data = abi.encodeWithSignature(
-                "safeTransferFrom(address,address,uint256)",
-                _from,
-                _to,
-                _tokenId
-            );
-        }
+        bytes memory data = abi.encodeWithSignature(
+            "safeTransferFrom(address,address,uint256)",
+            _from,
+            _to,
+            _tokenId
+        );
 
         (bool success, bytes memory resultData) = address(_tokenAddress).call(
             data
@@ -135,6 +57,113 @@ contract LiquidTransfer {
         require(
             success,
             string(resultData)
+        );
+    }
+
+    /**
+     * @dev encoding for transfer
+     */
+    bytes4 constant TRANSFER = bytes4(
+        keccak256(
+            bytes(
+                "transfer(address,uint256)"
+            )
+        )
+    );
+
+    /**
+     * @dev encoding for transferFrom
+     */
+    bytes4 constant TRANSFER_FROM = bytes4(
+        keccak256(
+            bytes(
+                "transferFrom(address,address,uint256)"
+            )
+        )
+    );
+
+    /**
+     * @dev encoding for balanceOf
+     */
+    bytes4 private constant BALANCE_OF = bytes4(
+        keccak256(
+            bytes(
+                "balanceOf(address)"
+            )
+        )
+    );
+
+    /**
+     * @dev does an erc20 transfer then check for success
+     */
+    function _safeTransfer(
+        address _token,
+        address _to,
+        uint256 _value
+    )
+        internal
+    {
+        (bool success, bytes memory data) = _token.call(
+            abi.encodeWithSelector(
+                TRANSFER,
+                _to,
+                _value
+            )
+        );
+
+        require(success && (data.length == 0 || abi.decode(data, (bool))),
+            "LiquidTransfer: TRANSFER_FAILED"
+        );
+    }
+
+    /**
+     * @dev does an erc20 transferFrom then check for success
+     */
+    function _safeTransferFrom(
+        address _token,
+        address _from,
+        address _to,
+        uint256 _value
+    )
+        internal
+    {
+        (bool success, bytes memory data) = _token.call(
+            abi.encodeWithSelector(
+                TRANSFER_FROM,
+                _from,
+                _to,
+                _value
+            )
+        );
+
+        require(
+            success && (data.length == 0 || abi.decode(data, (bool))),
+            "LiquidTransfer: TRANSFER_FROM_FAILED"
+        );
+    }
+
+    /**
+     * @dev does an erc20 balanceOf then check for success
+     */
+    function _safeBalance(
+        address _token,
+        address _owner
+    )
+        internal
+        returns (uint256)
+    {
+        (bool success, bytes memory data) = _token.call(
+            abi.encodeWithSelector(
+                BALANCE_OF,
+                _owner
+            )
+        );
+
+        if (success == false) return 0;
+
+        return abi.decode(
+            data,
+            (uint256)
         );
     }
 

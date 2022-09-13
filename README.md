@@ -1,73 +1,37 @@
-## Wise Liquid NFT
+# Audit Scope
 
-// MAKE TRUNK - DEFAULT BRANCH!
+1. AccessControl.sol (simple role manager);
 
---
+## optional (events / interfaces)
 
-setup:
+2. Babylonian.sol (can be skipped, library used in several other projects);
+3. IChainLink.sol (simple interface file for chainlink interactions, does not contain logic);
+4. ILiquidInit.sol (simple interface file for the initial pool call, does not contain logic);
+5. ILiquidPool.sol (simple interface file for main functions of the pool, does not contain logic);
+6. ILiquidRouter.sol (simple interface file for the router, does not contain logic);
+7. LiquidEvents.sol (simple events for the the pool, does not contain logic);
+8. RouterEvents.sol (simple events for the the router, does not contain logic);
 
-# npm install
+## core (main scope)
 
---
+1. LiquidPool.sol (main pool high level logic);
+2. LiquidRouter.sol (main router, to call pools and store hashes);
+3. PoolFactory.sol (main factory, simple contract producing new pools);
 
-tests-pre-requirements:
-```
-    # npm run chain
-    # npm run deploy-token
-    # npm run deploy-factory
-```
+## helper (main scope)
 
-run tests:
-```
-    # npm run test-locker
-    # npm run test-factory
-    # npm run coverage
-```
+4. LiquidTransfer.sol (for NFT transfer only);
+5. PoolBase.sol (declarations for the pool and basic functions);
+6. PoolHelper.sol (contains main helper functions);
+7. PoolShareToken.sol (generic ERC20, was reviewed before exact copy, represents share);
+8. PoolViews.sol (contains only external views, does not affect state of the contract!);
 
 
-EXPECTED GAS USAGE:
-```
-·------------------------------------------|---------------------------|-------------|----------------------------·
-|   Solc version: 0.8.10+commit.fc410830   ·  Optimizer enabled: true  ·  Runs: 200  ·  Block limit: 6718946 gas  │
-···········································|···························|·············|·····························
-|  Methods                                                                                                        │
-··················|························|·············|·············|·············|··············|··············
-|  Contract       ·  Method                ·  Min        ·  Max        ·  Avg        ·  # calls     ·  usd (avg)  │
-··················|························|·············|·············|·············|··············|··············
-|  LiquidFactory  ·  contributeToLocker    ·      52576  ·     143218  ·     102345  ·          22  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  LiquidFactory  ·  createLiquidLocker    ·          -  ·          -  ·     288877  ·          20  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  LiquidFactory  ·  updateDefaultTarget   ·          -  ·          -  ·      28504  ·          10  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  LiquidFactory  ·  updateImplementation  ·          -  ·          -  ·      29039  ·          10  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  LiquidLocker   ·  disableLocker         ·          -  ·          -  ·      50969  ·          13  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  LiquidLocker   ·  enableLocker          ·      84126  ·     114126  ·      99126  ·           2  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  LiquidLocker   ·  refundDueDisabled     ·      23025  ·      31050  ·      25700  ·           3  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  LiquidLocker   ·  refundDueSingle       ·          -  ·          -  ·      31920  ·           1  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  NFT1155        ·  mint                  ·          -  ·          -  ·      35343  ·          20  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  NFT721         ·  approve               ·      24975  ·      46889  ·      38494  ·          80  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  NFT721         ·  mint                  ·          -  ·          -  ·     129578  ·          10  ·          -  │
-··················|························|·············|·············|·············|··············|··············
-|  Deployments                             ·                                         ·  % of limit  ·             │
-···········································|·············|·············|·············|··············|··············
-|  LiquidLocker                            ·          -  ·          -  ·    1915145  ·      28.5 %  ·          -  │
-···········································|·············|·············|·············|··············|··············
-|  NFT721                                  ·          -  ·          -  ·    1275636  ·        19 %  ·          -  │
-·------------------------------------------|-------------|-------------|-------------|--------------|-------------·
-```
+# !SKIP! - not to be included in the audit
+skip them (these files are purely for testing and test scenarios, not part of the actual product or scope of the audit)
 
-1 (TIME)
-OLD:  makeContribution      ·      44684  ·     132335  ·      93909  + 40000 (for first approval)
-NEW:  contributeToLocker    ·      52576  ·     143218  ·     102345  + 40000 (for first approval)
-
-2 (TIMES)
-OLD:  makeContribution      ·      84684  ·     132335  ·      93909  + 40000 (needs new approval)
-NEW:  contributeToLocker    ·      52576  ·     143218  ·     102345  + 0 (can use same approval)
+1. NFT721.sol (represents regular NFT);
+2. TestToken.sol (represents regular ERC20);
+3. TesterPool.sol (mock wrapper for testing pools);
+4. TesterChainlink.sol (for testing chainlink);
+5. TestHeartBeatStandAlone.sol (for testing chainlink);

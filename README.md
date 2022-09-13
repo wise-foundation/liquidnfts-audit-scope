@@ -15,6 +15,8 @@
 6. LiquidEvents.sol (simple events for the the pool, does not contain logic);
 7. RouterEvents.sol (simple events for the the router, does not contain logic);
 8. AccessControl.sol (simple role manager);
+9. PoolShareToken.sol (reviewed before as part of other audit, exact same copy)
+10. PoolViews.sol (only contains external views does not affect the state)
 
 # !SKIP! - not to be included in the audit
 skip them (these files are purely for testing and test scenarios, not part of the actual product or scope of the audit)

@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/PoolBase.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> PoolBase.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/0</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/0</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/0</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/0</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: WISE
+&nbsp;
+pragma solidity =0.8.13;
+&nbsp;
+import "./AccessControl.sol";
+&nbsp;
+contract PoolBase is AccessControl {
+&nbsp;
+    // ERC20 deposits and use for loans
+    address public poolToken;
+&nbsp;
+    // Maximal factor every NFT can be collateralized in this pool
+    uint256 public maxCollateralFactor;
+&nbsp;
+    // Discount percentage for the liquidator when buying the NFT
+    uint256 public liquidationPercentage;
+&nbsp;
+    // Current usage of the pool. 1E18 &lt;=&gt; 100 %
+    uint256 public utilization;
+&nbsp;
+    // Current actual number of token inside the contract
+    uint256 public totalPool;
+&nbsp;
+    // Current borrow rate of the pool;
+    uint256 public borrowRate;
+&nbsp;
+    // Current mean Markov value of the pool;
+    uint256 public markovMean;
+&nbsp;
+    // Bad debt amount in terms of poolToken correct decimals
+    uint256 public badDebt;
+&nbsp;
+    // Borrow rates variables
+    // ----------------------
+&nbsp;
+    // Pool position of borrow rate functions (divergent at x = r) 1E18 &lt;=&gt; 1 and r &gt; 1E18.
+    uint256 public resonanceFactor;
+&nbsp;
+    // Stepping size
+    uint256 public deltaResonaceFactor;
+&nbsp;
+    // Global minimum value for the resonance factor
+    uint256 public minResonaceFactor;
+&nbsp;
+    // Global maximum value for the resonance factor
+    uint256 public maxResonaceFactor;
+&nbsp;
+    // Individual multiplication factor scaling the y-axes (static after deployment of pool)
+    uint256 public multiplicativeFactor;
+&nbsp;
+    // Tracks the last interaction with the pool
+    uint256 public timeStampLastInteraction;
+&nbsp;
+    // Scaling algorithm variables
+    // --------------------------
+&nbsp;
+    // Tracks the resonance factor which corsresponds to maxPoolShares
+    uint256 public bestResonanceFactor;
+&nbsp;
+    // Tracks the maximal value of shares the pool has ever reached
+    uint256 public maxPoolShares;
+&nbsp;
+    // Tracks the previous shares value during algorithm last round execution
+    uint256 public previousValue;
+&nbsp;
+    // Tracks time when scaling algorithm has been triggerd last time
+    uint256 public timeStampLastAlgorithm;
+&nbsp;
+    // Switch for stepping directions
+    bool public increaseResonanceFactor;
+&nbsp;
+    // Should it be possible to expand the pool
+    bool public isExpandable;
+&nbsp;
+    // Global constants
+    // ----------------
+&nbsp;
+    uint256 constant ONE_YEAR = 52 weeks;
+    uint256 constant THREE_HOURS = 3 hours;
+    uint256 constant FIVE_PERCENT = 5E18;
+&nbsp;
+    uint256 constant NORM_FACTOR_SECONDS_IN_TWO_MONTH = 8 weeks;
+&nbsp;
+    uint256 constant PRECISION_FACTOR_E18 = 1E18;
+    uint256 constant PRECISION_FACTOR_E20 = 1E20;
+    uint256 constant PRECISION_FACTOR_E36 = 1E36;
+&nbsp;
+    uint256 constant ONE_YEAR_PRECISION_E20 = ONE_YEAR * PRECISION_FACTOR_E20;
+&nbsp;
+    uint256 constant ONE_HUNDRED = 100;
+    uint256 constant SECONDS_IN_DAY = 86400;
+&nbsp;
+    // Expecting user to payback the loan in 35 days or extend again
+    uint256 constant public MAXIMUM_TIME_BETWEEN_PAYMENTS = 35 days;
+&nbsp;
+    // Value determing weight of new value in markov chain (0.1 &lt;=&gt; 1E17)
+    uint256 constant MARKOV_FRACTION = 2E16; //2%
+&nbsp;
+    // Threshold for resetting resonance factor
+    uint256 constant THRESHOLD_RESET_RESONANCE_FACTOR = 75;
+&nbsp;
+    // Threshold for reverting stepping cirection
+    uint256 constant THRESHOLD_SWITCH_DIRECTION = 90;
+&nbsp;
+    // Absulute max value for borrow rate
+    uint256 constant UPPER_BOUND_MAX_RATE = 5E20;
+&nbsp;
+    // Lower max value for borrow rate
+    uint256 constant LOWER_BOUND_MAX_RATE = 15E19;
+&nbsp;
+    // Timeframe for normalization
+    uint256 constant NORM_FACTOR = 8 weeks;
+&nbsp;
+    // For reference to a zero address
+    address constant ZERO_ADDRESS = address(0x0);
+&nbsp;
+    // Fee in percentage, scaled by 1e18 that will be taken on interest generated by the system for the wise ecosystem
+    uint256 public fee = 20 * PRECISION_FACTOR_E18;
+&nbsp;
+    // Minimum allowable fee if the fee is changed in the future by the multisig/worker
+    uint256 public constant MIN_FEE = 1 * PRECISION_FACTOR_E18;
+&nbsp;
+    // Maximum allowable fee if the fee is changed in the future by the multisig/worker
+    uint256 public constant MAX_FEE = 50 * PRECISION_FACTOR_E18;
+&nbsp;
+    // Tokens currently held by contract + all tokens out on loans
+    uint256 public pseudoTotalTokensHeld;
+&nbsp;
+    // Tokens currently being used in loans
+    uint256 public totalTokensDue;
+&nbsp;
+    // Shares representing tokens owed on a loan
+    uint256 public totalBorrowShares;
+&nbsp;
+    // Shares representing deposits that are not tokenized
+    uint256 public totalInternalShares;
+&nbsp;
+    // Minimum duration until user gets liquidated
+    uint256 constant DEADLINE_DURATION = 7 days;
+&nbsp;
+    // Minimum duration until the multisig/worker can manually grab the nft token for external auction
+    uint256 constant DEADLINE_DURATION_MULTISIG = 9 days;
+&nbsp;
+    struct Loan {
+        uint48 nextPaymentDueTime;
+        uint48 lastPaidTime;
+        address tokenOwner;
+        uint256 borrowShares;
+        uint256 principalTokens;
+    }
+&nbsp;
+    struct Collection {
+        uint256 unlockTime;
+        bytes32 merkleRoot;
+        string ipfsUrl;
+    }
+&nbsp;
+    mapping(address =&gt; bool) public nftAddresses;
+    mapping(address =&gt; string) public merkleIPFSURLs;
+    mapping(address =&gt; uint256) public internalShares;
+    mapping(address =&gt; Collection) public pendingCollections;
+&nbsp;
+    // NFT address =&gt; merkle root
+    mapping(address =&gt; bytes32) public merkleRoots;
+&nbsp;
+    // NFT address =&gt; tokenID =&gt; loan data
+    mapping(address =&gt; mapping(uint256 =&gt; Loan)) public currentLoans;
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Aug 01 2022 20:37:49 GMT+0700 (Indochina Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

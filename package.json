@@ -4,15 +4,37 @@
 	"description": "Secure Smart Contract for Loans with NFTs as Collateral",
 	"version": "0.0.1",
 	"scripts": {
-		"chain": "ganache-cli --defaultBalanceEther 10000000 -i 5777 -p 9545 -l 12500000 -m \"urban prevent meadow draft involve security curtain robot brick question try scatter\"",
-		"deploy-token": "node deploy-token.js",
-		"deploy-factory": "node deploy-factory.js",
-		"deploy-punks": "node deploy-punks.js",
+		"chain": "ganache-cli --defaultBalanceEther 10000000 -i 1 -p 9545 -l 12500000 -m \"urban prevent meadow draft involve security curtain robot brick question try scatter\"",
+		"deploy-token": "node scripts/deploy-token.js",
+		"deploy-factory": "node scripts/deploy-factory.js",
+		"deploy-punks": "node scripts/deploy-punks.js",
+		"deploy-all": "node scripts/deploy-all.js",
+		"deploy-oracle": "node scripts/deploy-oracle.js",
 		"compile": "truffle compile",
+		"verify-factory": "truffle run verify PoolFactory@0x2Fb1458Dd8df4E470d17BeDA2D378836d7Fd4aa0 --network ropsten",
+		"verify-router": "truffle run verify LiquidRouter@0x6ffd530E5Ea365223A9aC3C102a8fE9CD70D3d11 --network ropsten",
+		"verify-pool": "truffle run verify LiquidPool@0xA652f09e07A88254E3591ec5a52A94b20A175AfD --network ropsten",
+		"verify-link": "truffle run verify TesterChainlink@0x61a313CeF402cB4F779C457109BF4254175709e8 --network ropsten",
 		"test": "truffle test",
-		"test-cycle": "npx truffle test test/lockerLifecycle.test.js",
+		"mainnetFork": "ganache-cli --defaultBalanceEther 10000000 -i 1337 -p 9545 -l 12500000 -m \"urban prevent meadow draft involve security curtain robot brick question try scatter\" --fork https://eth-mainnet.alchemyapi.io/v2/eGfKLR_6cWJUETOpgEBsSsBgufY8nMN9@14787478",
+		"mainnetForkOldBlock": "ganache-cli --defaultBalanceEther 10000000 -i 1337 -p 9545 -l 12500000 -m \"urban prevent meadow draft involve security curtain robot brick question try scatter\" --fork https://eth-mainnet.alchemyapi.io/v2/eGfKLR_6cWJUETOpgEBsSsBgufY8nMN9@12195926",
 		"test-locker": "npx truffle test test/locker.test.js",
 		"test-factory": "npx truffle test other/factory.test.js",
+
+		"test-borrow-rates": "npx truffle test test/instantPools_borrowRate.test.js",
+		"test-LASA": "npx truffle test test/instantPools_LASA.test.js",
+		"test-instantPools": "npx truffle test test/instantPools.test.js",
+		"test-instantPools2": "npx truffle test test/instantPools2.test.js",
+		"test-liquidations": "npx truffle test test/instantPools_liquidationLogic.test.js",
+		"test-baddebt": "npx truffle test test/instantPoolBadDebt.test.js",
+		"test-merkle": "npx truffle test test/instantPools_MerkleFunctionality.test.js",
+		"test-router": "npx truffle test test/router.test.js",
+		"test-fee": "npx truffle test test/instantPools_FeeTests.js",
+		"test-beat": "npx truffle test test/instantPools_heartbeatLocal.js",
+		"test-beat-mainnet": "npx truffle test test/instantPools_heartbeatMainnetFork.js",
+		"test-conversion": "npx truffle test test/instantPools_merklePriceConversion.test.js",
+		"test-borrow-more": "npx truffle test test/instantPoolsBorrowMoreFunds.test.js",
+		"test-coverage-addition": "npx truffle test test/coverageTestAddition.test.js",
 		"coverage": "npx truffle run coverage --network development"
 	},
 	"repository": {
@@ -27,7 +49,7 @@
 		"security",
 		"wise"
 	],
-	"author": "Vitally Marinchenko",
+	"author": "Vitally Marinchenko, Christoph Krpoun, René Hochmuth",
 	"bugs": {
 		"url": "https://github.com/wise-foundation/liquid-nft-contracts"
 	},
@@ -57,14 +79,16 @@
 		"rimraf": "^3.0.2",
 		"solhint": "^3.3.6",
 		"solidity-ast": "^0.4.25",
-		"solidity-coverage": "0.8.0-rc.1",
+		"solidity-coverage": "^0.7.11",
 		"solidity-docgen": "^0.5.3",
-		"truffle": "*",
-		"web3": "^1.3.0",
+		"truffle": "^5.4.12",
+		"web3": "^1.7.4",
 		"yargs": "^16.2.0"
 	},
 	"dependencies": {
-		"@openzeppelin/contracts": "^4.3.1",
-		"@openzeppelin/test-helpers": "^0.5.13"
+		"@openzeppelin/contracts": "^4.6.0",
+		"@openzeppelin/test-helpers": "^0.5.13",
+		"@poanet/solidity-flattener": "^3.0.6",
+		"@truffle/hdwallet-provider": "^2.0.13"
 	}
 }

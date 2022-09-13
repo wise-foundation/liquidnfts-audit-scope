@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: WISE
 
-pragma solidity =0.8.12;
+pragma solidity =0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract NFT721 is ERC721 {
 
-    uint256 tokenId;
+    uint256 public tokenId;
 
     mapping(address => uint256[]) public tokenIds;
 

@@ -1,11 +1,12 @@
-# Audit Scope
+# Main Audit Scope
 
 1. PoolBase.sol (declarations for the pool and basic functions);
 2. PoolHelper.sol (contains main helper functions);
-3. LiquidPool.sol (main pool high level logic);
-4. LiquidRouter.sol (main router, to call pools and store hashes);
+3. PoolFactory.sol (simple factory producing pools as clones)
+4. LiquidPool.sol (main pool high level logic);
+5. LiquidRouter.sol (main router, to call pools and store hashes);
 
-# optional (events / interfaces)
+# Additional Scope (events / interfaces / views)
 
 1. Babylonian.sol (can be skipped, library used in several other projects);
 2. IChainLink.sol (simple interface file for chainlink interactions, does not contain logic);

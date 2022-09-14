@@ -778,10 +778,10 @@ contract PoolHelper is PoolBase, PoolShareToken, LiquidTransfer {
 
         uint256 valueETHinUSD = _merkelPriceETH
             * IChainLink(chainLinkETH).latestAnswer()
-            / IChainLink(chainLinkETH).decimals();
+            / 10 ** IChainLink(chainLinkETH).decimals();
 
         return valueETHinUSD
-            * IChainLink(chainLinkFeedAddress).decimals()
+            * 10 ** IChainLink(chainLinkFeedAddress).decimals()
             / IChainLink(chainLinkFeedAddress).latestAnswer()
             / 10 ** (DECIMALS_ETH - poolTokenDecimals);
     }

@@ -177,7 +177,7 @@ contract PoolFactory {
         address _factory,
         address _implementation
     )
-        public
+        external
         pure
         returns (address predicted)
     {

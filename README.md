@@ -18,6 +18,7 @@
 8. AccessControl.sol (simple role manager);
 9. PoolShareToken.sol (reviewed before as part of other audit, exact same copy)
 10. PoolViews.sol (only contains external views does not affect the state)
+11. LiquidTransfer.sol (simple helper to move NFT tokens) 
 
 # !SKIP! - not to be included in the audit - Not Included 
 skip them (these files are purely for testing and test scenarios, not part of the actual product or scope of the audit)

@@ -94,10 +94,15 @@ contract LiquidPool is PoolViews, LiquidEvents {
 
         name = _tokenName;
         symbol = _tokenSymbol;
-        decimals = 18;
+        decimals = DECIMALS_ETH;
 
         chainLinkETH = ROUTER.chainLinkETH();
         poolTokenDecimals = IERC20(_poolToken).decimals();
+
+        require(
+            poolTokenDecimals <= DECIMALS_ETH,
+            "LiquidPool: WEIRD_TOKEN"
+        );
 
         // Calculating lower bound for the pole
         minPole = PRECISION_FACTOR_E18 / 2

@@ -1,4 +1,4 @@
-# Main Audit Scope
+# Main Audit Scope - Included
 
 1. PoolBase.sol (declarations for the pool and basic functions);
 2. PoolHelper.sol (contains main helper functions);
@@ -6,7 +6,7 @@
 4. LiquidPool.sol (main pool high level logic);
 5. LiquidRouter.sol (main router, to call pools and store hashes);
 
-# Additional Scope (events / interfaces / views)
+# Additional Scope (events / interfaces / views) - Included
 
 1. Babylonian.sol (can be skipped, library used in several other projects);
 2. IChainLink.sol (simple interface file for chainlink interactions, does not contain logic);
@@ -19,7 +19,7 @@
 9. PoolShareToken.sol (reviewed before as part of other audit, exact same copy)
 10. PoolViews.sol (only contains external views does not affect the state)
 
-# !SKIP! - not to be included in the audit
+# !SKIP! - not to be included in the audit - Not Included 
 skip them (these files are purely for testing and test scenarios, not part of the actual product or scope of the audit)
 
 1. NFT721.sol (represents regular NFT);

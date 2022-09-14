@@ -145,7 +145,7 @@ contract LiquidRouter is LiquidTransfer, AccessControl, RouterEvents {
 
         _addWorker(
             _pool,
-            msg.sender
+            multisig
         );
 
         emit LiquidPoolRegistered(

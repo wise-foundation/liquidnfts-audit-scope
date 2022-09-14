@@ -2,6 +2,7 @@ const LiquidPoolTester = artifacts.require("TesterPool");
 const LiquidFactory = artifacts.require("PoolFactory");
 const LiquidRouter = artifacts.require("LiquidRouter");
 const Chainlink = artifacts.require("TesterChainlink");
+const PoolView = artifacts.require("PoolViews");
 const {BN, expectRevert, time } = require('@openzeppelin/test-helpers');
 
 const ERC20 = artifacts.require("TestToken");
@@ -33,7 +34,7 @@ contract("instantPools", async accounts => {
 
     const [owner, alice, bob] = accounts;
 
-    let token, pool, nft, pricingData, router, factory, poolCount, initialTargetPool,testerPool;
+    let token, pool, nft, pricingData, router, factory, poolCount, initialTargetPool, testerPool, poolView;
 
     describe("Initialization tests", () => {
 
@@ -52,8 +53,8 @@ contract("instantPools", async accounts => {
             );
 
             chainlinkUSDC = await Chainlink.new(
-                toWei("1"),
-                18
+                toWei("0.0000000001"),
+                8
             );
 
             factory = await LiquidFactory.new(
@@ -64,6 +65,8 @@ contract("instantPools", async accounts => {
             await factory.updateDefaultPoolTarget(
                 newPool.address
             );
+
+            poolView = await PoolView.new();
 
             const routerAddress = await factory.routerAddress();
 
@@ -261,6 +264,7 @@ contract("instantPools", async accounts => {
             const HUNDRED = 100;
             const TOKEN_ID1 = 1;
             const TOKEN_ID2 = 2;
+            const smallTime = 10;
 
             pricingData = await getTokenData(
                 TOKEN_ID1
@@ -317,7 +321,9 @@ contract("instantPools", async accounts => {
             const littleLess = Bn(maxBorrow)
                 .sub(Bn(toWei("0.000000000000001")));
 
-            debug("littleless", littleLess);
+            const maxBorrowContract = await pool.getMaximumBorrow(
+                    merklePrice
+            );
 
             const currentStamp = await chainlinkUSDC.getTimeStamp();
 
@@ -329,8 +335,16 @@ contract("instantPools", async accounts => {
                 currentStamp
             );
 
-            const smallTime = 10;
+
             await time.increase(smallTime);
+
+            const convertValue = await pool.merklePriceInPoolToken(
+                maxBorrowContract
+            );
+
+            debug("littleless", littleLess);
+            debug("convertValue", convertValue);
+
 
             await router.borrowFunds(
                 pool.address,
@@ -525,7 +539,7 @@ contract("instantPools", async accounts => {
 
             const ETH_USD = 10;
             const USDC_USD = 1;
-            const USDC_USD_NEW = 2;
+            const USDC_USD_NEW = "0.0000000002";
             const COLL_FACTOR = 75;
             const HUNDRED = 100;
 
@@ -533,6 +547,7 @@ contract("instantPools", async accounts => {
             const TOKEN_ID2 = 2;
 
             const shortTime = 100;
+            const smallTime = 10;
 
             // starting price 1 USD for USDC
             pricingData = await getTokenData(
@@ -581,18 +596,17 @@ contract("instantPools", async accounts => {
             const littleLess = Bn(maxBorrow)
                 .sub(Bn(toWei("0.000000000000001")));
 
-                const currentStamp = await chainlinkUSDC.getTimeStamp();
+            const currentStamp = await chainlinkUSDC.getTimeStamp();
 
-                await chainlinkUSDC.setlastUpdateGlobal(
-                    currentStamp
-                );
+            await chainlinkUSDC.setlastUpdateGlobal(
+                currentStamp
+            );
 
-                await chainlinkETH.setlastUpdateGlobal(
-                    currentStamp
-                );
+            await chainlinkETH.setlastUpdateGlobal(
+                currentStamp
+            );
 
-                const smallTime = 10;
-                await time.increase(smallTime);
+            await time.increase(smallTime);
 
             // Since USDC is 1 USD value this borrow should go through. Cause the ETH USD value is equal the token amount
             await router.borrowFunds(
@@ -612,7 +626,7 @@ contract("instantPools", async accounts => {
             await pool.setMarkovMean(0);
 
             await chainlinkUSDC.setUSDValue(
-                toWei(USDC_USD_NEW.toString())
+                toWei(USDC_USD_NEW)
             );
 
             // Now changing USD value of USDC to two and try to borrow
@@ -623,13 +637,21 @@ contract("instantPools", async accounts => {
                 .div(BN(HUNDRED))
                 .div(BN(USDC_USD));
 
-            const littleLessFail = Bn(maxBorrowFail)
-                .sub(Bn(toWei("0.000000000000001")));
+            const maxBorrowContract = await pool.getMaximumBorrow(
+                pricingDataSecond.amount
+            );
+
+            const convertValue = await pool.merklePriceInPoolToken(
+                maxBorrowContract
+            );
+
+            debug("maxBorrowFail", maxBorrowFail);
+            debug("convertValue", convertValue);
 
             await expectRevert(
                 router.borrowFunds(
                     pool.address,
-                    littleLessFail,
+                    maxBorrowFail,
                     nft.address,
                     TOKEN_ID2,
                     pricingDataSecond.index,
@@ -647,8 +669,11 @@ contract("instantPools", async accounts => {
             const maxBorrowPass = Bn(ETH_USD)
                 .mul(Bn(pricingDataSecond.amount))
                 .mul(Bn(COLL_FACTOR))
+                .mul(BN(100000000))
                 .div(BN(HUNDRED))
-                .div(BN(USDC_USD_NEW));
+                .div(BN(toWei(USDC_USD_NEW)));
+
+            debug("maxBorrowPass", maxBorrowPass);
 
             const littleLessPass = Bn(maxBorrowPass)
                 .sub(Bn(toWei("0.000000000000001")));
@@ -767,6 +792,127 @@ contract("instantPools", async accounts => {
                     }
                 )
             );
+        });
+
+        it("Conversion value test", async() => {
+
+            const TOKEN_ID1 = 1;
+            const smallTime = 10;
+
+            pricingData = await getTokenData(
+                TOKEN_ID1
+            );
+
+            await factory.createLiquidPool(
+                token.address,
+                chainlinkUSDC.address,
+                toWei("1"),
+                toWei("0.75"),
+                [nft.address],
+                "Pool Shares",
+                "POOL",
+            );
+
+            poolAddress = await factory.predictPoolAddress(
+                poolCount,
+                token.address,
+                factory.address,
+                initialTargetPool
+            );
+
+            pool = await LiquidPoolTester.at(
+                poolAddress
+            );
+
+            // start with ETH = 10 USD and USDC = 1 USD
+            const result1 = toWei("2500");
+
+            const merklePrice = pricingData.amount;
+
+            const currentStamp = await chainlinkUSDC.getTimeStamp();
+
+            await chainlinkUSDC.setlastUpdateGlobal(
+                currentStamp
+            );
+
+            await chainlinkETH.setlastUpdateGlobal(
+                currentStamp
+            );
+
+            await time.increase(smallTime);
+
+            const contractConv1 = await pool.merklePriceInPoolToken(
+                merklePrice
+            );
+
+            debug("contractConv1", contractConv1);
+            debug("result1", result1);
+
+            const decETH = await chainlinkETH.decimals();
+            const decUSDC = await chainlinkUSDC.decimals();
+
+            debug("decETH", decETH);
+            debug("decUSDC", decUSDC);
+
+            const ordersETH = 10 ** decETH;
+            const ordersUSDC = 10 ** decUSDC;
+
+            const priceETH = await chainlinkETH.latestAnswer();
+            const priceUSDC = await chainlinkUSDC.latestAnswer();
+
+            debug("priceETH", priceETH);
+            debug("priceUSDC", priceUSDC);
+
+            assert.equal(
+                contractConv1.toString(),
+                result1.toString()
+            );
+
+            // Now with some more realistic values: 1 ETH = 1556.66 USD, 1 USDC = 0.999995
+
+            const ethNewValue = toWei("1556.66");
+            const usdcNewVaue = toWei("0.0000000000999995");
+            const result2 = toWei("389166.9458");
+            const orderCheck = 10000000;
+
+            await chainlinkUSDC.setUSDValue(
+                usdcNewVaue
+            );
+
+            await chainlinkETH.setUSDValue(
+                ethNewValue
+            );
+
+            const currentStamp2 = await chainlinkUSDC.getTimeStamp();
+
+            await chainlinkUSDC.setlastUpdateGlobal(
+                currentStamp2
+            );
+
+            await chainlinkETH.setlastUpdateGlobal(
+                currentStamp2
+            );
+
+            await time.increase(smallTime);
+
+            const contractConv2 = await pool.merklePriceInPoolToken(
+                merklePrice
+            );
+
+            debug("contractConv2", contractConv2);
+            debug("result2", result2);
+
+            const quotient = contractConv2
+                .mul(new BN(orderCheck))
+                .div(new BN(result2));
+
+            debug("quotient", quotient);
+
+            assert.equal(
+                orderCheck.toString(),
+                quotient.toString()
+            );
+
         });
     });
 

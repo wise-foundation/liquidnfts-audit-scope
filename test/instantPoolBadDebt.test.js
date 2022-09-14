@@ -1207,5 +1207,519 @@ contract("instantPools", async accounts => {
                 "1"
             );
         });
+
+        it("Share allocation works correctly with tokenized shares and bad debt(life-cyle-test)", async() => {
+
+            const TOKEN_ID_1= 1;
+            const TOKEN_ID_2 = 2;
+            const TOKEN_ID_3 = 3;
+            const initDepo = "10000";
+            const depoTwo = "333";
+            const borrowAmount = "2405";
+            const littleMoreThanBorrowed = "1560";
+            const secondBorrowAmount = "1550";
+            const thirdBorrowAmount = "333";
+            const oneHour = 3600;
+            const defaultTime = 35 * SECONDS_IN_DAY + 2 * oneHour;
+            const HUGE_AMOUNT = toWei("10000000000");
+            const smallTime = 10;
+            const longBorrowTime = 50 * SECONDS_IN_DAY
+
+            poolCount = await factory.poolCount();
+            const initialTargetPool = await factory.defaultPoolTarget();
+
+            await factory.createLiquidPool(
+                token.address,
+                chainlinkUSDC.address,
+                web3.utils.toWei("1"),
+                toWei("1"),
+                [nft.address],
+                "Pool Shares2",
+                "POOL2",
+                {
+                    from: multisig
+                }
+            );
+
+            const poolAddressTwo = await factory.predictPoolAddress(
+                poolCount,
+                token.address,
+                factory.address,
+                initialTargetPool
+            );
+
+            const poolTwo = await LiquidPoolTester.at(poolAddressTwo)
+
+            await nft.mint(
+                {
+                    from: chad
+                }
+            );
+
+            await nft.mint(
+                {
+                    from: bob
+                }
+            );
+
+            await nft.approve(
+                router.address,
+                TOKEN_ID_2,
+                {
+                    from: chad
+                }
+            );
+
+            await nft.approve(
+                router.address,
+                TOKEN_ID_3,
+                {
+                    from: bob
+                }
+            );
+
+            await token.mint(
+                HUGE_AMOUNT,
+                {
+                    from: chad
+                }
+            );
+
+            await token.approve(
+                router.address,
+                HUGE_AMOUNT,
+                {
+                    from: chad
+                }
+            );
+
+            await token.mint(
+                HUGE_AMOUNT,
+                {
+                    from: bob
+                }
+            );
+
+            await token.approve(
+                router.address,
+                HUGE_AMOUNT,
+                {
+                    from: bob
+                }
+            );
+
+            const pricingData1 = getTokenData(
+                TOKEN_ID_1
+            );
+
+            const pricingData2 = getTokenData(
+                TOKEN_ID_2
+            );
+
+            const pricingData3 = getTokenData(
+                TOKEN_ID_3
+            );
+
+            await router.depositFunds(
+                toWei(initDepo),
+                poolTwo.address,
+                {
+                    from: alice
+                }
+            );
+
+            const internalShareAlice = await poolTwo.internalShares(
+                alice
+            );
+
+            const tokenShareAliceStart = await poolTwo.balanceOf(
+                alice
+            );
+
+            assert.equal(
+                internalShareAlice.toString(),
+                toWei(initDepo).toString()
+            );
+
+            assert.equal(
+                tokenShareAliceStart.toString(),
+                "0"
+            );
+
+            const anzTokenShares = internalShareAlice
+                .mul(new BN(toWei("0.25")))
+                .div(new BN(toWei("1")));
+
+            await poolTwo.tokeniseShares(
+                anzTokenShares,
+                {
+                    from: alice
+                }
+            );
+
+            const tokenShareAlice = await poolTwo.balanceOf(
+                alice
+            );
+
+            assert.equal(
+                tokenShareAlice.toString(),
+                anzTokenShares.toString()
+            );
+
+            const currentStampOne = await chainlinkUSDC.getTimeStamp();
+
+            await chainlinkUSDC.setlastUpdateGlobal(
+                currentStampOne
+            );
+
+            await chainlinkETH.setlastUpdateGlobal(
+                currentStampOne
+            );
+
+            await time.increase(smallTime);
+
+            const sharesRouter1 = await poolTwo.internalShares(
+                router.address
+            );
+
+            assert.equal(
+                sharesRouter1.toString(),
+                "0"
+            );
+
+            await router.borrowFunds(
+                poolTwo.address,
+                toWei(borrowAmount),
+                nft.address,
+                TOKEN_ID_1,
+                pricingData1.index,
+                pricingData1.amount,
+                pricingData1.proof,
+                {
+                    from: bob
+                }
+            );
+
+            const sharesRouter2 = await poolTwo.internalShares(
+                router.address
+            );
+
+            assert.equal(
+                sharesRouter1.toString(),
+                sharesRouter2.toString()
+            );
+
+            await time.increase(defaultTime);
+
+            const currentStampTwo = await chainlinkUSDC.getTimeStamp();
+
+            await chainlinkUSDC.setlastUpdateGlobal(
+                currentStampTwo
+            );
+
+            await chainlinkETH.setlastUpdateGlobal(
+                currentStampTwo
+            );
+
+            await time.increase(smallTime);
+
+
+            await router.liquidateNFT(
+                poolTwo.address,
+                nft.address,
+                TOKEN_ID_1,
+                pricingData1.index,
+                pricingData1.amount,
+                pricingData1.proof,
+                {
+                    from: alice
+                }
+            );
+
+            await router.borrowFunds(
+                poolTwo.address,
+                toWei(secondBorrowAmount),
+                nft.address,
+                TOKEN_ID_2,
+                pricingData2.index,
+                pricingData2.amount,
+                pricingData2.proof,
+                {
+                    from: chad
+                }
+            );
+
+            const baddebt1 = await poolTwo.badDebt();
+            const diff1 = await poolTwo.differencePseudo();
+
+            debug("diff1", diff1);
+            debug("baddebt1", baddebt1);
+
+            await time.increase(SECONDS_IN_DAY);
+
+            await router.depositFunds(
+                toWei(depoTwo),
+                poolTwo.address,
+                {
+                    from: alice
+                }
+            );
+
+            const anzTokenShares2 = internalShareAlice
+                .mul(new BN(toWei("0.13")))
+                .div(new BN(toWei("1")));
+
+            await poolTwo.tokeniseShares(
+                anzTokenShares2,
+                {
+                    from: alice
+                }
+            );
+
+            const tokenShareAlice2 = await poolTwo.balanceOf(
+                alice
+            );
+
+            assert.isAbove(
+                parseInt(tokenShareAlice2),
+                parseInt(tokenShareAlice)
+            );
+
+            const sharesRouter3 = await poolTwo.internalShares(
+                router.address
+            );
+
+            assert.isAbove(
+                parseInt(sharesRouter3),
+                parseInt(sharesRouter2)
+            );
+
+            const currentStampThree = await chainlinkUSDC.getTimeStamp();
+
+            await chainlinkUSDC.setlastUpdateGlobal(
+                currentStampThree
+            );
+
+            await chainlinkETH.setlastUpdateGlobal(
+                currentStampThree
+            );
+
+            await time.increase(smallTime);
+
+            await router.borrowFunds(
+                poolTwo.address,
+                toWei(thirdBorrowAmount),
+                nft.address,
+                TOKEN_ID_3,
+                pricingData3.index,
+                pricingData3.amount,
+                pricingData3.proof,
+                {
+                    from: bob
+                }
+            );
+
+            const sharesRouter4 = await poolTwo.internalShares(
+                router.address
+            );
+
+            assert.equal(
+                sharesRouter3.toString(),
+                sharesRouter4.toString()
+            );
+
+            await time.increase(SECONDS_IN_DAY);
+
+            await router.depositFunds(
+                toWei(depoTwo),
+                poolTwo.address,
+                {
+                    from: alice
+                }
+            );
+
+            const baddebt3 = await poolTwo.badDebt();
+            const diff3 = await poolTwo.differencePseudo();
+
+            debug("diff3", diff3);
+            debug("baddebt3", baddebt3);
+
+            assert.isAbove(
+                parseInt(baddebt1),
+                parseInt(baddebt3)
+            )
+
+            const currentStamFour = await chainlinkUSDC.getTimeStamp();
+
+            await chainlinkUSDC.setlastUpdateGlobal(
+                currentStamFour
+            );
+
+            await chainlinkETH.setlastUpdateGlobal(
+                currentStamFour
+            );
+
+            await time.increase(smallTime);
+
+            await router.paybackFunds(
+                poolTwo.address,
+                toWei(littleMoreThanBorrowed),
+                nft.address,
+                TOKEN_ID_3,
+                pricingData3.index,
+                pricingData3.amount,
+                pricingData3.proof,
+                {
+                    from: bob
+                }
+            );
+
+            const NFTLiq3 = await nft.ownerOf(
+                TOKEN_ID_3
+            );
+
+            assert.equal(
+                NFTLiq3,
+                bob
+            );
+
+            const sharesRouter5 = await poolTwo.internalShares(
+                router.address
+            );
+
+            assert.equal(
+                sharesRouter5.toString(),
+                sharesRouter4.toString()
+            );
+
+            await time.increase(longBorrowTime);
+
+            await router.depositFunds(
+                toWei("1"),
+                poolTwo.address,
+                {
+                    from: alice
+                }
+            );
+
+            const baddebt4 = await poolTwo.badDebt();
+            const diff4 = await poolTwo.differencePseudo();
+
+            debug("diff4", diff4);
+            debug("baddebt4", baddebt4);
+
+            await time.increase(4 * longBorrowTime);
+
+            await router.depositFunds(
+                toWei("1"),
+                poolTwo.address,
+                {
+                    from: alice
+                }
+            );
+
+            const currentStampFive = await chainlinkUSDC.getTimeStamp();
+
+            await chainlinkUSDC.setlastUpdateGlobal(
+                currentStampFive
+            );
+
+            await chainlinkETH.setlastUpdateGlobal(
+                currentStampFive
+            );
+
+            await time.increase(smallTime);
+
+            await router.paybackFunds(
+                poolTwo.address,
+                toWei(littleMoreThanBorrowed),
+                nft.address,
+                TOKEN_ID_2,
+                pricingData2.index,
+                pricingData2.amount,
+                pricingData2.proof,
+                {
+                    from: chad
+                }
+            );
+
+            const routerShareEnd = await poolTwo.internalShares(
+                router.address
+            );
+
+            await router.withdrawFees(
+                [poolTwo.address],
+                [routerShareEnd],
+                {
+                    from: multisig
+                }
+            );
+
+            await time.increase(smallTime);
+
+            const aliceEndShare = await poolTwo.internalShares(
+                alice
+            );
+
+            const aliceEndToken = await poolTwo.balanceOf(
+                alice
+            );
+
+            const aliceEnd = aliceEndShare
+                .add(aliceEndToken);
+
+            await router.withdrawFunds(
+                aliceEnd,
+                poolTwo.address,
+                {
+                    from: alice
+                }
+            );
+
+            const balEnd = await token.balanceOf(
+                poolTwo.address
+            );
+
+            const sharesEnd = await poolTwo.totalInternalShares();
+            debug("sharesEnd", sharesEnd);
+            const pseudoEnd = await poolTwo.pseudoTotalTokensHeld();
+            debug("pseudoEnd", pseudoEnd);
+            const tokenDueEnd = await poolTwo.totalTokensDue();
+            debug("tokenDueEnd", tokenDueEnd);
+            const borrowSharesEnd = await poolTwo.totalBorrowShares();
+            debug("borrowSharesEnd", borrowSharesEnd);
+            const borrowRate = await poolTwo.borrowRate();
+            debug("borrowRate", borrowRate);
+            const totPoolEnd = await poolTwo.totalPool();
+            debug("totPoolEnd", totPoolEnd);
+            const utiEnd = await poolTwo.utilisationRate();
+            debug("utiEnd", utiEnd);
+
+            assert.equal(
+                sharesEnd.toString(),
+                "1"
+            );
+
+            assert.isAbove(
+                parseInt(5),
+                parseInt(pseudoEnd)
+            );
+
+            assert.equal(
+                tokenDueEnd.toString(),
+                "0"
+            );
+
+            assert.equal(
+                borrowSharesEnd.toString(),
+                "0"
+            );
+
+            assert.equal(
+                balEnd.toString(),
+                "1"
+            );
+
+        });
     });
 })
